@@ -3,7 +3,7 @@ import threading
 from contextlib import contextmanager
 
 # Database configuration
-DB_PATH = "asset_tags.db"
+DB_PATH = "data/asset_tags.db"
 
 # Thread-local storage for database connections
 _local = threading.local()

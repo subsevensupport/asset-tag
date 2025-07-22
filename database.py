@@ -54,3 +54,13 @@ def get_next_number():
             RETURNING current_value
         """)
         return cursor.fetchone()[0]
+
+def peek_next_number():
+    """Check what the next number will be without incrementing"""
+    with get_db() as conn:
+        cursor = conn.execute("""
+            SELECT current_value + 1 as next_value 
+            FROM counters 
+            WHERE id = 1
+        """)
+        return cursor.fetchone()[0]

@@ -1,0 +1,53 @@
+# A descriptive name for the workflow, which will appear in the GitHub Actions tab.
+name: CI - Build and Push Docker Image
+
+# This section defines the trigger for the workflow.
+on:
+  # The 'push' event triggers the workflow.
+  push:
+    # It only runs for pushes to the 'main' branch.
+    # You could add other branches like 'develop' here if needed.
+    branches: [ "main" ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel.
+jobs:
+  # Defines a job with the unique ID 'build-and-push'.
+  build-and-push:
+    # A friendly name for the job that will be displayed on GitHub.
+    name: Build and Push to Docker Hub
+
+    # Specifies the runner environment. 'ubuntu-latest' is a standard and recommended choice.
+    runs-on: ubuntu-latest
+
+    # The 'steps' section contains a sequence of tasks to be executed.
+    steps:
+      # Step 1: Check out the repository's code.
+      # This step downloads your source code into the runner, making it accessible to subsequent steps.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Log in to the container registry (Docker Hub).
+      # This uses the official Docker login action to securely authenticate.
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          # The username is pulled from a GitHub secret for security.
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          # The password (or access token) is also pulled from a GitHub secret.
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Step 3: Build the Docker image and push it to the registry.
+      # This is the core step that handles both building and pushing.
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          # 'context: .' sets the build context to the root of the repository.
+          context: .
+          # 'file: ./Dockerfile' explicitly specifies the path to the Dockerfile.
+          file: ./Dockerfile
+          # 'push: true' tells the action to push the image after a successful build.
+          push: true
+          # 'tags:' defines the name and tag for the image.
+          # IMPORTANT: You must replace this with your actual Docker Hub username and image name.
+          tags: rhaacksubseven/asset-tagger:1.0
+
